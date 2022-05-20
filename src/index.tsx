@@ -151,7 +151,7 @@ const ReactDjSetting = ({
           <label>Speaker:</label>
           <select
             onChange={(e) => onUpdateSpeaker(e.target.value)}
-            value={speakerDeviceId}
+            value={speakerDeviceId2}
           >
             {audioOutputs.map((d) => (
               <option key={d.deviceId} value={d.deviceId}>
