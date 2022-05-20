@@ -5,15 +5,6 @@ import Music from "./components/music"
 import SoundEffect from "./components/sound-effect"
 import { OnDataChangeParam } from "./interfaces"
 Modal.setAppElement("#root")
-
-interface OnChangeProps {
-  speakerDeviceId: string
-  microphoneDeviceId: string
-  microphoneVolume: number
-  soundEffectVolume: number
-  musicVolume: number
-}
-
 interface ReactDjSettingProps {
   buttonStyle?: React.CSSProperties
   buttonName?: React.ReactNode
@@ -30,7 +21,7 @@ interface ReactDjSettingProps {
     microphoneVolume,
     soundEffectVolume,
     musicVolume,
-  }: OnChangeProps) => void
+  }: OnDataChangeParam) => void
 }
 
 const ReactDjSetting = ({
@@ -43,18 +34,22 @@ const ReactDjSetting = ({
   soundEffectTestSrc,
   musicVolume = 0.5,
   musicTestSrc,
+  onChange,
 }: ReactDjSettingProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [audioOutputs, setAudioOutputs] = useState<MediaDeviceInfo[]>([])
   const [speakerDeviceId2, setSpeakerDeviceId2] = useState<string>("")
   const audioSpeakerRef = useRef<HTMLAudioElement>(null)
-  const [settingData, setSettingData] = useState({})
+  const [settingData, setSettingData] = useState<OnDataChangeParam>()
 
   const openModal = () => setIsOpen(true)
   const closeModal = () => setIsOpen(false)
 
   const onSave = () => {
-    console.log("onSave", settingData)
+    if (settingData) {
+      onChange?.(settingData)
+    }
+    
     closeModal()
   }
 
