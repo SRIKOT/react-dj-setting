@@ -161,6 +161,7 @@ const ReactDjSetting = ({
             <Styled.ButtonBox></Styled.ButtonBox>
             <audio ref={audioSpeakerRef}></audio>
           </Styled.LabelBox>
+          <Styled.BorderSection />
           <SoundEffect
             soundEffectVolume={soundEffectVolume}
             speakerDeviceId={speakerDeviceId2}

@@ -1,8 +1,9 @@
 import styled from "styled-components"
 
 const Container = styled.div`
-  padding-left: 112px;
-  padding-right: 112px;
+  width: 526px;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 const LabelBox = styled.div`
@@ -10,6 +11,7 @@ const LabelBox = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-bottom: 20px;
+  width: 100%;
 `
 
 const ButtonBox = styled.div`
@@ -24,7 +26,7 @@ const Label = styled.div`
   font-size: 16px;
   line-height: 24px;
   color: #121212;
-  width: 95px;
+  width: 20%;
 `
 
 const Header = styled.div`
@@ -256,10 +258,10 @@ const MicrophoneVolumeBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: -10px;
   padding-bottom: 20px;
-  padding-left: 120px;
-  padding-right: 20px;
+  width: 73%;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 const VolumeBox = styled.div`
@@ -372,6 +374,15 @@ const VolumeControlContainer = styled.div`
   }
 `
 
+const BorderSection = styled.div`
+  width: 654px;
+  height: 0px;
+  border: 1px solid #e0e0e0;
+  margin-left: -56px;
+  margin-bottom: 40px;
+  margin-top: 25px;
+`
+
 export const Styled = {
   Container,
   LabelBox,
@@ -388,6 +399,7 @@ export const Styled = {
   ButtonTestStroke,
   ButtonTestFill,
   ButtonPlaying,
+  BorderSection,
   MicrophoneVolumeBox,
   MicrophonePlayBox,
   VolumeBox,

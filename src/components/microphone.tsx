@@ -212,20 +212,23 @@ const Microphone = ({
         </Styled.ButtonBox>
         <audio ref={audioMicrophoneRef}></audio>
       </Styled.LabelBox>
-      <Styled.MicrophoneVolumeBox>
-        <Styled.IconSvgFillColor>
-          <IconMicrophoneOffOutline onClick={() => onMute(true)} />
-        </Styled.IconSvgFillColor>
-        <VolumeControl
-          volume={microphoneVolume2}
-          muted={microphoneMute}
-          setVolume={setMicrophoneVolume2}
-          onVolumeChange={(volume) => onUpdateVolume(volume)}
-        />
-        <Styled.IconSvgStrokeColor>
-          <IconMicrophoneOutline onClick={() => onMute(false)} />
-        </Styled.IconSvgStrokeColor>
-      </Styled.MicrophoneVolumeBox>
+      <Styled.LabelBox>
+        <Styled.Label></Styled.Label>
+        <Styled.MicrophoneVolumeBox>
+          <Styled.IconSvgFillColor>
+            <IconMicrophoneOffOutline onClick={() => onMute(true)} />
+          </Styled.IconSvgFillColor>
+          <VolumeControl
+            volume={microphoneVolume2}
+            muted={microphoneMute}
+            setVolume={setMicrophoneVolume2}
+            onVolumeChange={(volume) => onUpdateVolume(volume)}
+          />
+          <Styled.IconSvgStrokeColor>
+            <IconMicrophoneOutline onClick={() => onMute(false)} />
+          </Styled.IconSvgStrokeColor>
+        </Styled.MicrophoneVolumeBox>
+      </Styled.LabelBox>
     </div>
   )
 }
