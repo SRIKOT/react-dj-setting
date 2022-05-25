@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react"
+import { IconPauseFilled, IconSpeakerOff, IconSpeakerOn } from "../assets/svg"
 import VolumeControl from "../components/volume-control"
-import { OnDataChangeParam } from "../interfaces"
-
-interface SoundEffectProps {
-  soundEffectVolume: number
-  speakerDeviceId: string
-  soundEffectTestSrc: string
-  onDataChange: ({ soundEffectVolume }: OnDataChangeParam) => void
-}
+import { SoundEffectProps } from "../interfaces"
+import { Styled } from "../styles/styled"
 
 const SoundEffect = ({
   soundEffectVolume = 0.5,
@@ -18,6 +13,7 @@ const SoundEffect = ({
   const [soundEffectVolume2, setSoundEffectVolume2] = useState<number>(0)
   const [soundEffectMute, setSoundEffectMute] = useState<boolean>(false)
   const audioSoundEffectRef = useRef<HTMLAudioElement>(null)
+  const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
   const onUpdateVolume = (volume: number) => {
     setSoundEffectVolume2(volume)
@@ -35,6 +31,10 @@ const SoundEffect = ({
     audioSoundEffectRef.current.src = soundEffectTestSrc
     audioSoundEffectRef.current.play()
   }, [soundEffectTestSrc, audioSoundEffectRef.current])
+
+  const onMute = (value: boolean) => {
+    setSoundEffectMute(value)
+  }
 
   const updateSkinId = async (deviceId: string) => {
     if (!audioSoundEffectRef.current) {
@@ -66,21 +66,50 @@ const SoundEffect = ({
     }
   }, [soundEffectVolume2, audioSoundEffectRef.current])
 
+  useEffect(() => {
+    if (audioSoundEffectRef.current) {
+      audioSoundEffectRef.current.onplaying = () => {
+        setIsPlaying(true)
+      }
+
+      audioSoundEffectRef.current.onended = () => {
+        setIsPlaying(false)
+      }
+    }
+  }, [audioSoundEffectRef.current])
+
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <label>Sound effect:</label>
-      <VolumeControl
-        volume={soundEffectVolume2}
-        muted={soundEffectMute}
-        setVolume={setSoundEffectVolume2}
-        setMuted={setSoundEffectMute}
-        onVolumeChange={(volume) => onUpdateVolume(volume)}
-      />
-      <button type="button" onClick={onTestSoundEffect}>
-        Test
-      </button>
+    <Styled.LabelBox>
+      <Styled.Label>Sound effect:</Styled.Label>
+      <Styled.VolumeBox>
+        <Styled.IconSvgFillColor>
+          <IconSpeakerOff onClick={() => onMute(true)} />
+        </Styled.IconSvgFillColor>
+        <VolumeControl
+          volume={soundEffectVolume2}
+          muted={soundEffectMute}
+          setVolume={setSoundEffectVolume2}
+          onVolumeChange={(volume) => onUpdateVolume(volume)}
+        />
+        <Styled.IconSvgFillColor>
+          <IconSpeakerOn onClick={() => onMute(false)} />
+        </Styled.IconSvgFillColor>
+      </Styled.VolumeBox>
+      <Styled.ButtonBox>
+        {isPlaying ? (
+          <Styled.ButtonPlaying type="button">
+            <IconPauseFilled />
+            Playing
+          </Styled.ButtonPlaying>
+        ) : (
+          <Styled.ButtonTestFill type="button" onClick={onTestSoundEffect}>
+            <IconSpeakerOn />
+            Test
+          </Styled.ButtonTestFill>
+        )}
+      </Styled.ButtonBox>
       <audio ref={audioSoundEffectRef}></audio>
-    </div>
+    </Styled.LabelBox>
   )
 }
 

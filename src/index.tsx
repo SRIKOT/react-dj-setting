@@ -1,32 +1,21 @@
 import React, { useEffect, useState, useRef } from "react"
 import Modal from "react-modal"
+import { IconCloseSvg, IconDropdown } from "./assets/svg"
 import Microphone from "./components/microphone"
 import Music from "./components/music"
 import SoundEffect from "./components/sound-effect"
-import { OnDataChangeParam } from "./interfaces"
+import {
+  IconCloseProps,
+  OnDataChangeParam,
+  ReactDjSettingProps,
+} from "./interfaces"
+import { Styled } from "./styles/styled"
 Modal.setAppElement("#root")
-interface ReactDjSettingProps {
-  buttonStyle?: React.CSSProperties
-  buttonName?: React.ReactNode
-  speakerDeviceId?: string
-  microphoneDeviceId?: string
-  microphoneVolume?: number
-  soundEffectVolume?: number
-  soundEffectTestSrc: string
-  musicVolume?: number
-  musicTestSrc: string
-  onChange?: ({
-    speakerDeviceId,
-    microphoneDeviceId,
-    microphoneVolume,
-    soundEffectVolume,
-    musicVolume,
-  }: OnDataChangeParam) => void
-}
 
 const ReactDjSetting = ({
   buttonStyle,
   buttonName,
+  buttonClassName,
   speakerDeviceId,
   microphoneDeviceId,
   microphoneVolume = 0.5,
@@ -49,7 +38,7 @@ const ReactDjSetting = ({
     if (settingData) {
       onChange?.(settingData)
     }
-    
+
     closeModal()
   }
 
@@ -116,7 +105,11 @@ const ReactDjSetting = ({
 
   return (
     <div>
-      <button style={buttonStyle} onClick={openModal}>
+      <button
+        style={buttonStyle}
+        className={buttonClassName}
+        onClick={openModal}
+      >
         {buttonName}
       </button>
       <Modal
@@ -125,6 +118,7 @@ const ReactDjSetting = ({
         style={{
           overlay: {
             zIndex: 1000,
+            background: "rgba(0, 0, 0, 0.45)",
           },
           content: {
             top: "50%",
@@ -135,100 +129,66 @@ const ReactDjSetting = ({
             transform: "translate(-50%, -50%)",
             borderRadius: 8,
             width: 750,
-            height: 645,
+            position: "relative",
+            background: "#FFFFFF",
           },
         }}
       >
-        <IconClose closeModal={closeModal} />
-        <Header />
-        <Microphone
-          microphoneVolume={microphoneVolume}
-          microphoneDeviceId={microphoneDeviceId}
-          speakerDeviceId={speakerDeviceId2}
-          onDataChange={onDataChange}
-        />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <label>Speaker:</label>
-          <select
-            onChange={(e) => onUpdateSpeaker(e.target.value)}
-            value={speakerDeviceId2}
-          >
-            {audioOutputs.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
-          <audio ref={audioSpeakerRef}></audio>
-        </div>
-        <SoundEffect
-          soundEffectVolume={soundEffectVolume}
-          speakerDeviceId={speakerDeviceId2}
-          soundEffectTestSrc={soundEffectTestSrc}
-          onDataChange={onDataChange}
-        />
-        <Music
-          musicVolume={musicVolume}
-          speakerDeviceId={speakerDeviceId2}
-          musicTestSrc={musicTestSrc}
-          onDataChange={onDataChange}
-        />
-        <button onClick={onSave}>Save</button>
+        <Styled.Container>
+          <IconClose closeModal={closeModal} />
+          <Styled.Header>Setting</Styled.Header>
+          <Microphone
+            microphoneVolume={microphoneVolume}
+            microphoneDeviceId={microphoneDeviceId}
+            speakerDeviceId={speakerDeviceId2}
+            onDataChange={onDataChange}
+          />
+          <Styled.LabelBox>
+            <Styled.Label>Speaker:</Styled.Label>
+            <Styled.SelectWrapper>
+              <Styled.Select
+                onChange={(e) => onUpdateSpeaker(e.target.value)}
+                value={speakerDeviceId2}
+              >
+                {audioOutputs.map((d) => (
+                  <option key={d.deviceId} value={d.deviceId}>
+                    {d.label}
+                  </option>
+                ))}
+              </Styled.Select>
+              <IconDropdown />
+            </Styled.SelectWrapper>
+            <Styled.ButtonBox></Styled.ButtonBox>
+            <audio ref={audioSpeakerRef}></audio>
+          </Styled.LabelBox>
+          <SoundEffect
+            soundEffectVolume={soundEffectVolume}
+            speakerDeviceId={speakerDeviceId2}
+            soundEffectTestSrc={soundEffectTestSrc}
+            onDataChange={onDataChange}
+          />
+          <Music
+            musicVolume={musicVolume}
+            speakerDeviceId={speakerDeviceId2}
+            musicTestSrc={musicTestSrc}
+            onDataChange={onDataChange}
+          />
+          <Styled.ButtonSave onClick={onSave}>
+            <Styled.ButtonSaveText>Save</Styled.ButtonSaveText>
+          </Styled.ButtonSave>
+        </Styled.Container>
       </Modal>
     </div>
   )
 }
 
-interface IconCloseProps {
-  closeModal: () => void
-}
-
 const IconClose = ({ closeModal }: IconCloseProps) => {
   return (
-    <div
-      style={{
-        float: "right",
-        cursor: "pointer",
-      }}
-    >
-      <svg
-        width="25"
-        height="25"
-        viewBox="0 0 25 25"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        onClick={closeModal}
-      >
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M4.17164 4.42182C3.89828 4.69519 3.89828 5.1384 4.17164 5.41177L19.255 20.4951C19.5283 20.7685 19.9716 20.7685 20.2449 20.4951C20.5183 20.2217 20.5183 19.7785 20.2449 19.5052L5.1616 4.42182C4.88823 4.14846 4.44501 4.14846 4.17164 4.42182Z"
-          fill="#9E9E9E"
-        />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M20.3281 4.42182C20.6015 4.69519 20.6015 5.1384 20.3281 5.41177L5.24478 20.4951C4.97141 20.7685 4.5282 20.7685 4.25483 20.4951C3.98146 20.2217 3.98146 19.7785 4.25483 19.5052L19.3382 4.42182C19.6115 4.14846 20.0547 4.14846 20.3281 4.42182Z"
-          fill="#9E9E9E"
-        />
-      </svg>
-    </div>
-  )
-}
-
-const Header = () => {
-  return (
-    <h1
-      style={{
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: "28px",
-        lineHeight: "46px",
-        textAlign: "center",
-      }}
-    >
-      Setting
-    </h1>
+    <Styled.IconClose>
+      <Styled.ButtonIcon onClick={closeModal}>
+        <IconCloseSvg />
+      </Styled.ButtonIcon>
+    </Styled.IconClose>
   )
 }
 

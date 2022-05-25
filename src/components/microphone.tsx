@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useState, useRef } from "react"
-import { OnDataChangeParam } from "../interfaces"
+import {
+  IconDropdown,
+  IconMicrophoneOffOutline,
+  IconMicrophoneOutline,
+  IconPauseFilled,
+  IconPlayFilled,
+  IconReset,
+} from "../assets/svg"
+import { MicrophoneProps } from "../interfaces"
+import { Styled } from "../styles/styled"
 import VolumeControl from "./volume-control"
-
-interface MicrophoneProps {
-  microphoneVolume: number
-  speakerDeviceId: string
-  microphoneDeviceId?: string
-  onDataChange: ({
-    microphoneVolume,
-    microphoneDeviceId,
-  }: OnDataChangeParam) => void
-}
 
 const Microphone = ({
   microphoneVolume,
@@ -25,6 +24,7 @@ const Microphone = ({
   const audioMicrophoneRef = useRef<HTMLAudioElement>(null)
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>()
   const [audioUrl, setAudioUrl] = useState<string>("")
+  const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
   const onUpdateDeviceId = (deviceId: string) => {
     setMicrophoneDeviceId2(deviceId)
@@ -66,13 +66,12 @@ const Microphone = ({
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     const mr = new MediaRecorder(stream)
     mr.start()
-    let chunks: Blob[] = []
+    const chunks: Blob[] = []
     mr.ondataavailable = function (e) {
       chunks.push(e.data)
     }
     mr.onstop = function () {
       const blob = new Blob(chunks, { type: "audio/mpeg" })
-      if (audioUrl) window.URL.revokeObjectURL(audioUrl)
       const url = window.URL.createObjectURL(blob)
       setAudioUrl(url)
     }
@@ -89,6 +88,15 @@ const Microphone = ({
   const onChangeMicrophone = (deviceId: string) => {
     onUpdateDeviceId(deviceId)
   }
+
+  const onMute = (value: boolean) => {
+    setMicrophoneMute(value)
+  }
+
+  const onReset = useCallback(() => {
+    if (audioUrl) window.URL.revokeObjectURL(audioUrl)
+    setAudioUrl("")
+  }, [audioUrl])
 
   const updateSkinId = async (deviceId: string) => {
     if (!audioMicrophoneRef.current) {
@@ -141,42 +149,83 @@ const Microphone = ({
     updateSkinId(speakerDeviceId)
   }, [speakerDeviceId])
 
+  useEffect(() => {
+    if (audioMicrophoneRef.current) {
+      audioMicrophoneRef.current.onplaying = () => {
+        setIsPlaying(true)
+      }
+
+      audioMicrophoneRef.current.onended = () => {
+        setIsPlaying(false)
+      }
+    }
+  }, [audioMicrophoneRef.current])
+
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <label>Microphone:</label>
-        <select
-          onChange={(e) => onChangeMicrophone(e.target.value)}
-          value={microphoneDeviceId2}
-        >
-          {audioInputs.map((d) => (
-            <option key={d.deviceId} value={d.deviceId}>
-              {d.label}
-            </option>
-          ))}
-        </select>
-        {audioUrl ? (
-          <button type="button" onClick={onTestMicrophone}>
-            play
-          </button>
-        ) : mediaRecorder ? (
-          <button type="button" onClick={onStopRecordMicrophone}>
-            Speaking...
-          </button>
-        ) : (
-          <button type="button" onClick={onStartRecordMicrophone}>
-            Test
-          </button>
-        )}
+      <Styled.LabelBox>
+        <Styled.Label>Microphone:</Styled.Label>
+        <Styled.SelectWrapper>
+          <Styled.Select
+            onChange={(e) => onChangeMicrophone(e.target.value)}
+            value={microphoneDeviceId2}
+          >
+            {audioInputs.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label}
+              </option>
+            ))}
+          </Styled.Select>
+          <IconDropdown />
+        </Styled.SelectWrapper>
+        <Styled.ButtonBox>
+          {audioUrl ? (
+            <Styled.MicrophonePlayBox>
+              <IconReset onClick={onReset} style={{ cursor: "pointer" }} />
+              {isPlaying ? (
+                <Styled.ButtonPlaying type="button">
+                  <IconPauseFilled />
+                  Playing
+                </Styled.ButtonPlaying>
+              ) : (
+                <Styled.ButtonTestFill type="button" onClick={onTestMicrophone}>
+                  <IconPlayFilled />
+                  Play
+                </Styled.ButtonTestFill>
+              )}
+            </Styled.MicrophonePlayBox>
+          ) : mediaRecorder ? (
+            <Styled.ButtonSpeaker
+              type="button"
+              onClick={onStopRecordMicrophone}
+            >
+              <IconMicrophoneOutline /> Speaking...
+            </Styled.ButtonSpeaker>
+          ) : (
+            <Styled.ButtonTestStroke
+              type="button"
+              onClick={onStartRecordMicrophone}
+            >
+              <IconMicrophoneOutline /> Test
+            </Styled.ButtonTestStroke>
+          )}
+        </Styled.ButtonBox>
         <audio ref={audioMicrophoneRef}></audio>
-      </div>
-      <VolumeControl
-        volume={microphoneVolume2}
-        muted={microphoneMute}
-        setVolume={setMicrophoneVolume2}
-        setMuted={setMicrophoneMute}
-        onVolumeChange={(volume) => onUpdateVolume(volume)}
-      />
+      </Styled.LabelBox>
+      <Styled.MicrophoneVolumeBox>
+        <Styled.IconSvgFillColor>
+          <IconMicrophoneOffOutline onClick={() => onMute(true)} />
+        </Styled.IconSvgFillColor>
+        <VolumeControl
+          volume={microphoneVolume2}
+          muted={microphoneMute}
+          setVolume={setMicrophoneVolume2}
+          onVolumeChange={(volume) => onUpdateVolume(volume)}
+        />
+        <Styled.IconSvgStrokeColor>
+          <IconMicrophoneOutline onClick={() => onMute(false)} />
+        </Styled.IconSvgStrokeColor>
+      </Styled.MicrophoneVolumeBox>
     </div>
   )
 }

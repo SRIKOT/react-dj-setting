@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react"
+import { IconPauseFilled, IconSpeakerOff, IconSpeakerOn } from "../assets/svg"
 import VolumeControl from "../components/volume-control"
-import { OnDataChangeParam } from "../interfaces"
-
-interface MusicProps {
-  musicVolume: number
-  speakerDeviceId: string
-  musicTestSrc: string
-  onDataChange: ({ musicVolume }: OnDataChangeParam) => void
-}
+import { MusicProps } from "../interfaces"
+import { Styled } from "../styles/styled"
 
 const Music = ({
   musicVolume = 0.5,
@@ -18,6 +13,7 @@ const Music = ({
   const [musicVolume2, setMusicVolume2] = useState<number>(0)
   const [musicMute, setMusicMute] = useState<boolean>(false)
   const audioMusicRef = useRef<HTMLAudioElement>(null)
+  const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
   const onUpdateVolume = (volume: number) => {
     setMusicVolume2(volume)
@@ -35,6 +31,10 @@ const Music = ({
     audioMusicRef.current.src = musicTestSrc
     audioMusicRef.current.play()
   }, [musicTestSrc, audioMusicRef.current])
+
+  const onMute = (value: boolean) => {
+    setMusicMute(value)
+  }
 
   const updateSkinId = async (deviceId: string) => {
     if (!audioMusicRef.current) {
@@ -66,21 +66,50 @@ const Music = ({
     }
   }, [musicVolume2, audioMusicRef.current])
 
+  useEffect(() => {
+    if (audioMusicRef.current) {
+      audioMusicRef.current.onplaying = () => {
+        setIsPlaying(true)
+      }
+
+      audioMusicRef.current.onended = () => {
+        setIsPlaying(false)
+      }
+    }
+  }, [audioMusicRef.current])
+
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <label>Music:</label>
-      <VolumeControl
-        volume={musicVolume2}
-        muted={musicMute}
-        setVolume={setMusicVolume2}
-        setMuted={setMusicMute}
-        onVolumeChange={(volume) => onUpdateVolume(volume)}
-      />
-      <button type="button" onClick={onTestMusic}>
-        Test
-      </button>
+    <Styled.LabelBox>
+      <Styled.Label>Music:</Styled.Label>
+      <Styled.VolumeBox>
+        <Styled.IconSvgFillColor>
+          <IconSpeakerOff onClick={() => onMute(true)} />
+        </Styled.IconSvgFillColor>
+        <VolumeControl
+          volume={musicVolume2}
+          muted={musicMute}
+          setVolume={setMusicVolume2}
+          onVolumeChange={(volume) => onUpdateVolume(volume)}
+        />
+        <Styled.IconSvgFillColor>
+          <IconSpeakerOn onClick={() => onMute(false)} />
+        </Styled.IconSvgFillColor>
+      </Styled.VolumeBox>
+      <Styled.ButtonBox>
+        {isPlaying ? (
+          <Styled.ButtonPlaying type="button">
+            <IconPauseFilled />
+            Playing
+          </Styled.ButtonPlaying>
+        ) : (
+          <Styled.ButtonTestFill type="button" onClick={onTestMusic}>
+            <IconSpeakerOn />
+            Test
+          </Styled.ButtonTestFill>
+        )}
+      </Styled.ButtonBox>
       <audio ref={audioMusicRef}></audio>
-    </div>
+    </Styled.LabelBox>
   )
 }
 
