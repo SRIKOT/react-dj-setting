@@ -83,7 +83,7 @@ const Music = ({
       <Styled.Label>Music:</Styled.Label>
       <Styled.VolumeBox>
         <Styled.IconSvgFillColor>
-          <IconSpeakerOff onClick={() => onMute(true)} />
+          <IconSpeakerOff onClick={() => onMute(!musicMute)} />
         </Styled.IconSvgFillColor>
         <VolumeControl
           volume={musicVolume2}

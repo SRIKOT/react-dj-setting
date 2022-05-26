@@ -83,7 +83,7 @@ const SoundEffect = ({
       <Styled.Label>Sound effect:</Styled.Label>
       <Styled.VolumeBox>
         <Styled.IconSvgFillColor>
-          <IconSpeakerOff onClick={() => onMute(true)} />
+          <IconSpeakerOff onClick={() => onMute(!soundEffectMute)} />
         </Styled.IconSvgFillColor>
         <VolumeControl
           volume={soundEffectVolume2}
