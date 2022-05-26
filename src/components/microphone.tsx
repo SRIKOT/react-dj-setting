@@ -127,23 +127,11 @@ const Microphone = ({
       .then(async function (devices) {
         const audioinputs = devices.filter((d) => d.kind === "audioinput")
         setAudioInputs(audioinputs)
-
-        if (!audioinputs.length) {
-          console.error("microphone input is required!")
-          return
-        }
-
-        //set default input device
-        if (!microphoneDeviceId) {
-          onUpdateDeviceId(audioinputs[0].deviceId)
-        } else {
-          onUpdateDeviceId(microphoneDeviceId)
-        }
       })
       .catch(function (err) {
         console.log(err.name + ": " + err.message)
       })
-  }, [microphoneDeviceId])
+  }, [])
 
   useEffect(() => {
     updateSkinId(speakerDeviceId)
@@ -160,6 +148,13 @@ const Microphone = ({
       }
     }
   }, [audioMicrophoneRef.current])
+
+  useEffect(() => {
+    //set default input device
+    if (microphoneDeviceId) {
+      onUpdateDeviceId(microphoneDeviceId)
+    }
+  }, [microphoneDeviceId])
 
   return (
     <div>
@@ -216,7 +211,7 @@ const Microphone = ({
         <Styled.Label></Styled.Label>
         <Styled.MicrophoneVolumeBox>
           <Styled.IconSvgFillColor>
-            <IconMicrophoneOffOutline onClick={() => onMute(true)} />
+            <IconMicrophoneOffOutline onClick={() => onMute(!microphoneMute)} />
           </Styled.IconSvgFillColor>
           <VolumeControl
             volume={microphoneVolume2}
