@@ -17,6 +17,7 @@ export interface ReactDjSettingProps {
   soundEffectTestSrc: string
   musicVolume?: number
   musicTestSrc: string
+  shouldCloseOnOverlayClick?: boolean
   onChange?: ({
     speakerDeviceId,
     microphoneDeviceId,

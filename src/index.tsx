@@ -23,6 +23,7 @@ const ReactDjSetting = ({
   soundEffectTestSrc,
   musicVolume = 0.5,
   musicTestSrc,
+  shouldCloseOnOverlayClick = true,
   onChange,
 }: ReactDjSettingProps) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -115,6 +116,7 @@ const ReactDjSetting = ({
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
+        shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
         style={{
           overlay: {
             zIndex: 1000,
